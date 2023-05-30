@@ -3,9 +3,9 @@ from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 
 class CarModel(models.Model):
-    brand = models.CharField(_("Markė"), max_length=100, db_index=True)
-    model = models.CharField(_("Modelis"), max_length=50, db_index=True)
-    year = models.IntegerField(_("Metai"), null=True, blank=True, db_index=True)
+    brand = models.CharField(_("Make"), max_length=100, db_index=True)
+    model = models.CharField(_("Model"), max_length=50, db_index=True)
+    year = models.IntegerField(_("Year"), null=True, blank=True, db_index=True)
 
     class Meta:
         ordering = ['brand', 'model']
@@ -20,14 +20,14 @@ class CarModel(models.Model):
 
 
 class Car(models.Model):
-    license_plate = models.CharField(_("Valstybinis Nr."), max_length=50, db_index=True)
+    license_plate = models.CharField(_("License plate Nr."), max_length=50, db_index=True)
     model = models.ForeignKey(
         CarModel, 
         verbose_name=_("model"), 
         on_delete=models.CASCADE,
         related_name="cars")
-    vin_code =  models.CharField(_("VIN kodas"), max_length=50, db_index=True)
-    client = models.CharField(_("Klientas"), max_length=100, db_index=True)
+    vin_code =  models.CharField(_("VIN code"), max_length=50, db_index=True)
+    client = models.CharField(_("Client"), max_length=100, db_index=True)
 
     class Meta:
         ordering = ['client', 'license_plate']
@@ -42,8 +42,7 @@ class Car(models.Model):
     
     
 class Order(models.Model):
-    date = models.DateField(_("Data"), auto_now=False, auto_now_add=True, db_index=True)
-    sum = models.DecimalField(_("Suma"), max_digits=18, decimal_places=2,  null=True, db_index=True)
+    date = models.DateField(_("Date"), auto_now=False, auto_now_add=True, db_index=True)
     car = models.ForeignKey(
         Car, 
         verbose_name=_("car"), 
@@ -51,20 +50,20 @@ class Order(models.Model):
         related_name="orders")
 
     class Meta:
-        ordering = ['date']
+        ordering = ['date', "id"]
         verbose_name = _("order")
         verbose_name_plural = _("orders")
 
     def __str__(self):
-        return f"{self.date} - {self.id}"
+        return f"Order #{self.id} - {self.date}"
 
     def get_absolute_url(self):
         return reverse("order_detail", kwargs={"pk": self.pk})
 
 
 class Service(models.Model):
-    name = models.CharField(_("Pavadinimas"), max_length=150, db_index=True)
-    price = models.DecimalField(_("Kaina"), max_digits=18, decimal_places=2, null=True, db_index=True)
+    name = models.CharField(_("Service Name"), max_length=150, db_index=True)
+    price = models.DecimalField(_("Price"), max_digits=18, decimal_places=2, null=True, db_index=True)
 
     class Meta:
         ordering = ["name", "price"]
@@ -83,14 +82,14 @@ class OrderEntry(models.Model):
         Service, 
         verbose_name=_("service"),
         related_name="order_entries", 
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE, null=True)
     order = models.ForeignKey(
         Order, 
         verbose_name=_("order"),
         related_name ="order_entries",
-        on_delete=models.CASCADE)
-    quantity = models.IntegerField(_("Kiekis"), null=True, blank=True, db_index=True)
-    price = models.DecimalField(_("Kaina"), max_digits=18, decimal_places=2, null=True, db_index=True)
+        on_delete=models.CASCADE, null=True)
+    quantity = models.CharField(_("Quantity"), max_length=50, null=True, blank=True, db_index=True)
+    price = models.DecimalField(_("Price"), max_digits=18, decimal_places=2, null=True, db_index=True)
 
     class Meta:
         ordering = ["price", "quantity"]
@@ -98,7 +97,7 @@ class OrderEntry(models.Model):
         verbose_name_plural = _("order entries")
 
     def __str__(self):
-        return f"OrderEntry {self.service.name} - {self.quantity}"
+        return f"{self.service.name} - {self.quantity} - {self.price}"
 
     def get_absolute_url(self):
         return reverse("orderentry_detail", kwargs={"pk": self.pk})
