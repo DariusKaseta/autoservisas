@@ -6,6 +6,9 @@ from .models import OrderEntry
 class OrderEntryInline(admin.TabularInline):
     model = OrderEntry
 
+class OrderEntryAdmin(admin.ModelAdmin):
+    list_display = ("service", "order", "quantity", "price")
+
 class OrderAdmin(admin.ModelAdmin):
     list_display = ("id", "car", "date")
     inlines = [OrderEntryInline]
@@ -24,6 +27,6 @@ class ServiceAdmin(admin.ModelAdmin):
 admin.site.register(models.Car, CarAdmin)
 admin.site.register(models.CarModel)
 admin.site.register(models.Order, OrderAdmin)
-admin.site.register(models.OrderEntry)
+admin.site.register(models.OrderEntry, OrderEntryAdmin)
 admin.site.register(models.Service, ServiceAdmin)
 
