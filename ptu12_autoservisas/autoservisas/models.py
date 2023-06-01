@@ -87,7 +87,7 @@ class OrderEntry(models.Model):
     order = models.ForeignKey(
         Order, 
         verbose_name=_("order"),
-        related_name ="order_entries",
+        related_name="order_entries",
         on_delete=models.CASCADE, null=True)
     quantity = models.CharField(_("Quantity"), max_length=50, null=True, blank=True, db_index=True)
     price = models.DecimalField(_("Price"), max_digits=18, decimal_places=2, null=True, db_index=True)

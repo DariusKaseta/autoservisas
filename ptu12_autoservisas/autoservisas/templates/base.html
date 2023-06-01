@@ -5,18 +5,24 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}PTU12 Ren's Service{% endblock title %}</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+   
 </head>
 <body>
-<header>
+<header style="background-color: lightgrey;">
     <ul class="nav">
-        <li class="logo">&#128218; PTU12 DK's Service</li>
-        <li><a href="{% url 'index' %}">Home</a></li>
+        <li class="logo">&#128736; PTU12 DK's Service</li>
+        <li class="logo">&#127968; <a href="{% url 'index' %}">Home</a></li>
+        <li class="logo">&#128663; <a href="{% url 'car_list' %}">Cars</a></li>
+        <li class="logo">&#128203; <a href="{% url 'order_list_view' %}">Order List</a></li> 
     </ul>
 </header>
-<main>{% block content %}
-{% endblock content %}</main>
-<footer><p>&copy; 2023 <a href="https://discord.gg/QAUWnqGF" target="_blank">PTU12 Team</a></p></footer>
+<main>
+    {% block content %}
+    {% endblock content %}
+</main>
+<footer class="footer">
+    <p>&copy; 2023 <a href="https://discord.gg/QAUWnqGF" target="_blank">PTU12 Team</a></p>
+</footer>
 </body>
 </html>
