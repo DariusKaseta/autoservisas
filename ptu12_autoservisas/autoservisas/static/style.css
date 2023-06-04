@@ -37,3 +37,10 @@ ul.paginator {
     background-color: #f9f9f9;
     border-radius: 0.9rem;
 }
+
+img.car_cover {
+    max-width: 20%;
+    margin: 0 0.5rem;
+    border: 2px solid #000;
+
+}

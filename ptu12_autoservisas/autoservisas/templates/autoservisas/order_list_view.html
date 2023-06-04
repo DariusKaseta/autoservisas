@@ -1,14 +1,18 @@
 {% extends 'base.html' %}
 {% block title %}Service Orders {{ block.super }}{% endblock title %}
 {% block content %}
-<h1>Service Orders</h1>
+<h1>Service orders</h1>
+<form action="" method="get">
+    <input name="query" type="text" value="{{ request.GET.query }}">
+    <button type="submit">&#128269;</button>
+    {% if request.GET.query %}<a href="{{ request.path }}">&#10007;</a>{% endif %}
+</form>
 {% if orders %}
 {% include  "includes/paginator_nav.html" %}
 <ul>
     {% for order in orders %}
         <li><a href="{% url 'order_detail' order.pk %}">
-        <strong>Client:</strong> {{ order.car.client }}
-        <strong>Car Model:</strong> {{ order.car.model }}</a></li>
+         <strong>Car Model:</strong> {{ order.car.model.model }}</a></li>
     {% endfor %}
 </ul>
 {% include  "includes/paginator_pages.html" %}

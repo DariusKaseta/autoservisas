@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Search</h1>
+<form method="GET" action="{% url 'search' %}">
+    <input type="text" name="owner_query" placeholder="Search by owner">
+    <input type="text" name="model_query" placeholder="Search by model">
+    <input type="text" name="license_plate_query" placeholder="Search by license plate">
+    <input type="text" name="vin_code_query" placeholder="Search by VIN code">
+    <button type="submit">Search</button>
+  </form>
+<h2>Search Results</h2>
+  {% if orders %}
+    <ul>
+      {% for order in orders %}
+        <li>
+          <a href="{% url 'order_detail' order.id %}">{{ order.car.client }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No search results</p>
+  {% endif %}
+{% endblock %}

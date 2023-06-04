@@ -1,10 +1,16 @@
 {% extends "base.html" %}
+ {% load static %}
 {% block title %} Car list {{ block.super }}{% endblock title %}
-
 {% block content %}
+
 <h1>Car details</h1>
-<p>Model: {{ car.model }}</p>
-<p>Model Year: {{ car.model.year }}</p>
+{% if car.cover %}
+    <img class="car_covers" src="{{ car.cover.url }}">
+{% else %}
+    <img class="car_covers" src="{% static "autoservisas/img/no_car_img.jpg" %}"> 
+{% endif %}
+<p>Model: {{ car.model.model }}</p>
+<p>Year: {{ car.model.year }}</p>
 <p>License Plate: {{ car.license_plate }}</p>
 <p>VIN Code: {{ car.vin_code }}</p>
 

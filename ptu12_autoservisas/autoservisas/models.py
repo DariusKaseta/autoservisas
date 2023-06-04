@@ -1,7 +1,8 @@
-from typing import Iterable, Optional
+from typing import Any, Iterable, Optional
 from django.db import models
 from django.utils.translation import gettext_lazy as _ 
 from django.urls import reverse
+
 
 class CarModel(models.Model):
     brand = models.CharField(_("Make"), max_length=100, db_index=True)
@@ -28,7 +29,12 @@ class Car(models.Model):
         on_delete=models.CASCADE,
         related_name="cars")
     vin_code =  models.CharField(_("VIN code"), max_length=50, db_index=True)
-    client = models.CharField(_("Client"), max_length=100, db_index=True)
+    client = models.CharField(_("Client"), max_length=100)
+
+    cover = models.ImageField(
+        _("cover"), upload_to="autoservisas/car_covers",
+        null=True, blank=True,
+    )
 
     class Meta:
         ordering = ['client', 'license_plate']
@@ -44,6 +50,7 @@ class Car(models.Model):
     
 class Order(models.Model):
     date = models.DateField(_("Date"), auto_now=False, auto_now_add=True, db_index=True)
+    price = models.DecimalField(_("Price"), max_digits=18, decimal_places=2, default=0)
     car = models.ForeignKey(
         Car, 
         verbose_name=_("car"), 
@@ -64,8 +71,16 @@ class Order(models.Model):
 
 class Service(models.Model):
     name = models.CharField(_("Service Name"), max_length=150, db_index=True)
-    price = models.DecimalField(_("Price"), max_digits=18, decimal_places=2, null=True, db_index=True)
-
+    price = models.DecimalField(_("Price"), max_digits=18, decimal_places=2, null=True)
+    
+    STATUS_CHOICES = [
+        ("new", "New"),
+        ("processing", "Processing"),
+        ("complete", "Complete"),
+        ("cancelled", "Cancelled"),
+    ]
+    status = models.CharField(_("Status"), max_length=20, choices=STATUS_CHOICES, default="new", db_index=True)
+    
     class Meta:
         ordering = ["name", "price"]
         verbose_name = _("service")
@@ -89,17 +104,11 @@ class OrderEntry(models.Model):
         verbose_name=_("order"),
         related_name="order_entries",
         on_delete=models.CASCADE, null=True)
-    quantity = models.CharField(_("Quantity"), max_length=50, null=True, blank=True, db_index=True)
-    price = models.DecimalField(_("Price"), max_digits=18, decimal_places=2, null=True, db_index=True)
-
-    STATUS_CHOICES = [
-        ("new", "New"),
-        ("processing", "Processing"),
-        ("complete", "Complete"),
-        ("cancelled", "Cancelled"),
-    ]
-    status = models.CharField(_("Status"), max_length=20, choices=STATUS_CHOICES, default="new", db_index=True)
-
+    quantity = models.DecimalField(_("Quantity"),max_digits=18, decimal_places=2, default=1)
+    # quantity = models.CharField(_("Quantity"), max_length=50, null=True, blank=True, db_index=True)
+    price = models.DecimalField(_("Price"), max_digits=18, decimal_places=2, default=0)
+    total = models.DecimalField(_("Total"), max_digits=18, decimal_places=2, default=0)
+    
     class Meta:
         ordering = ["price", "quantity"]
         verbose_name = _("order entry")
@@ -114,4 +123,7 @@ class OrderEntry(models.Model):
     def save(self, *args, **kwargs):
         if self.price == 0:
             self.price = self.service.price
+        self.total = self.price * self.quantity
         super().save(*args, **kwargs)
+        self.order.price = self.order.order_entries.aggregate(models.Sum("total"))["total__sum"]
+        self.order.save()
