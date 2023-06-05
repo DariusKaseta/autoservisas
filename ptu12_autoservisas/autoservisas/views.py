@@ -13,12 +13,18 @@ def index(request):
     num_car = Car.objects.all().count()
     num_completed_services = Service.objects.filter(status="complete").count()
 
+    num_visits = request.session.get("num_visits", 1)
+    request.session["num_visits"] = num_visits + 1
+
     context = {
         "num_service" : num_service,
         "num_car" : num_car,
         "num_completed_services" : num_completed_services,
+        "num_visits" : num_visits
     }
     return render(request, "autoservisas/index.html", context)
+
+    
 
 def car_list(request):
     qs = Car.objects
@@ -73,19 +79,3 @@ class OrderDetailView(generic.DetailView):
     
     def get_queryset(self):
         return super().get_queryset().prefetch_related("order_entries")
-
-
-
-# def search(request):
-#     owner_query = request.GET.get("owner_query")
-#     model_query = request.GET.get("model_query")
-#     license_plate_query = request.GET.get("license_plate_query")
-#     vin_code_query = request.GET.get("vin_code_query")
-
-#     search_results = Order.objects.all(
-#         Q(car__client__icontains= owner_query) | 
-#         Q(car__model__icontais= model_query) |
-#         Q(car__license__plate_icontains= license_plate_query) |
-#         Q(car__vin_code__icontains= vin_code_query)
-#     )
-#     return render(request, "search.html", {"orders" : search_results})

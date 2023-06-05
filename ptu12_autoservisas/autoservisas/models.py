@@ -105,7 +105,6 @@ class OrderEntry(models.Model):
         related_name="order_entries",
         on_delete=models.CASCADE, null=True)
     quantity = models.DecimalField(_("Quantity"),max_digits=18, decimal_places=2, default=1)
-    # quantity = models.CharField(_("Quantity"), max_length=50, null=True, blank=True, db_index=True)
     price = models.DecimalField(_("Price"), max_digits=18, decimal_places=2, default=0)
     total = models.DecimalField(_("Total"), max_digits=18, decimal_places=2, default=0)
     

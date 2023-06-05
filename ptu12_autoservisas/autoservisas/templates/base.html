@@ -11,10 +11,19 @@
 <body>
 <header style="background-color: lightgrey;">
     <ul class="nav">
-        <li class="logo">&#128736; PTU12 DK's Service</li>
+        <li class="logo">&#128736; DK's Service</li>
         <li class="logo">&#127968; <a href="{% url 'index' %}">Home</a></li>
         <li class="logo">&#128663; <a href="{% url 'car_list' %}">Cars</a></li>
-        <li class="logo">&#128203; <a href="{% url 'order_list_view' %}">Order List</a></li> 
+        <li class="logo">&#128203; <a href="{% url 'order_list_view' %}">Order List</a></li>
+        {% if user.is_authenticated %}
+            {% if user.is_superuser %}
+                <li class="logo">Admin: {{ user.username }}</li>
+            {% elif user.username == "super" %}
+                <li class="logo">Supervisor: {{ user.username }}</li>
+            {% elif user.username == "darbuotojas" %}
+                <li class="logo">Employee: {{ user.username }}</li>
+            {% endif %}
+        {% endif %}
     </ul>
 </header>
 <main>
