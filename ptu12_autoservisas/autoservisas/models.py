@@ -2,7 +2,10 @@ from typing import Any, Iterable, Optional
 from django.db import models
 from django.utils.translation import gettext_lazy as _ 
 from django.urls import reverse
+from datetime import date
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
 class CarModel(models.Model):
     brand = models.CharField(_("Make"), max_length=100, db_index=True)
@@ -22,6 +25,11 @@ class CarModel(models.Model):
 
 
 class Car(models.Model):
+    user_field= models.ForeignKey(
+        User, 
+        verbose_name=_("user_field"), 
+        related_name="cars", 
+        on_delete=models.CASCADE, null=True, blank=True)
     license_plate = models.CharField(_("License plate Nr."), max_length=50, db_index=True)
     model = models.ForeignKey(
         CarModel, 
@@ -29,7 +37,7 @@ class Car(models.Model):
         on_delete=models.CASCADE,
         related_name="cars")
     vin_code =  models.CharField(_("VIN code"), max_length=50, db_index=True)
-    client = models.CharField(_("Client"), max_length=100)
+    # note = models.CharField(_("Note"), max_length=1000, null=True, blank=True)
 
     cover = models.ImageField(
         _("cover"), upload_to="autoservisas/car_covers",
@@ -37,12 +45,12 @@ class Car(models.Model):
     )
 
     class Meta:
-        ordering = ['client', 'license_plate']
+        ordering = ["model", 'license_plate']
         verbose_name = _("car")
         verbose_name_plural = _("cars")
 
     def __str__(self):
-        return f"{self.client} - {self.license_plate}"
+        return f"{self.license_plate}"
 
     def get_absolute_url(self):
         return reverse("car_detail", kwargs={"pk": self.pk})
@@ -57,6 +65,14 @@ class Order(models.Model):
         on_delete=models.CASCADE,
         related_name="orders")
     
+    due_back = models.DateField(_("Due back"), null=True, blank=True, db_index=True)
+
+    @property
+    def is_overdue(self):
+        if self.due_back and date.today() > self.due_back:
+            return True
+        return False
+    
     class Meta:
         ordering = ['date', "id"]
         verbose_name = _("order")
@@ -67,19 +83,14 @@ class Order(models.Model):
 
     def get_absolute_url(self):
         return reverse("order_detail", kwargs={"pk": self.pk})
-
+    
+    @property
+    def client(self):
+        return self.car.user_field
 
 class Service(models.Model):
     name = models.CharField(_("Service Name"), max_length=150, db_index=True)
     price = models.DecimalField(_("Price"), max_digits=18, decimal_places=2, null=True)
-    
-    STATUS_CHOICES = [
-        ("new", "New"),
-        ("processing", "Processing"),
-        ("complete", "Complete"),
-        ("cancelled", "Cancelled"),
-    ]
-    status = models.CharField(_("Status"), max_length=20, choices=STATUS_CHOICES, default="new", db_index=True)
     
     class Meta:
         ordering = ["name", "price"]
@@ -108,6 +119,14 @@ class OrderEntry(models.Model):
     price = models.DecimalField(_("Price"), max_digits=18, decimal_places=2, default=0)
     total = models.DecimalField(_("Total"), max_digits=18, decimal_places=2, default=0)
     
+    STATUS_CHOICES = [
+        ("new", "New"),
+        ("processing", "Processing"),
+        ("complete", "Complete"),
+        ("cancelled", "Cancelled"),
+    ]
+    status = models.CharField(_("Status"), max_length=20, choices=STATUS_CHOICES, default="new", db_index=True)
+    
     class Meta:
         ordering = ["price", "quantity"]
         verbose_name = _("order entry")
@@ -118,6 +137,20 @@ class OrderEntry(models.Model):
 
     def get_absolute_url(self):
         return reverse("orderentry_detail", kwargs={"pk": self.pk})
+    
+    def get_color(self):
+        colors = {
+            "new": "blue",
+            "processing": "orange",
+            "complete": "green",
+            "cancelled": "red",
+        }
+        default_color = "black"
+        return colors.get(self.status, default_color)
+
+    def get_status_display(self):
+        return dict(self.STATUS_CHOICES).get(self.status)
+
     
     def save(self, *args, **kwargs):
         if self.price == 0:

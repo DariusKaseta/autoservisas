@@ -6,12 +6,14 @@ from django.core.paginator import Paginator
 from .models import Service, Car, OrderEntry, CarModel, Order
 from django.views import View , generic
 from django.views.generic import ListView
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
 
 def index(request):
     num_service = Service.objects.all().count()
     num_car = Car.objects.all().count()
-    num_completed_services = Service.objects.filter(status="complete").count()
+    num_completed_services = OrderEntry.objects.filter(status="complete").count()
 
     num_visits = request.session.get("num_visits", 1)
     request.session["num_visits"] = num_visits + 1
@@ -79,3 +81,20 @@ class OrderDetailView(generic.DetailView):
     
     def get_queryset(self):
         return super().get_queryset().prefetch_related("order_entries")
+    
+
+class UserOrderEntryListView(LoginRequiredMixin, generic.ListView):
+    model = Order
+    template_name = "autoservisas/my_orders.html"
+    paginate_by = 5
+
+    def get_queryset(self) -> QuerySet[Any]:
+        qs = super().get_queryset()
+        qs = qs.filter(car__user_field=self.request.user)
+        return qs
+
+# @login_required
+# def my_orders(request):
+#     user = request.user
+#     orders = Order.objects.filter(car__user_field=user)
+#     return render(request, "autoservisas/my_orders.html", {"orders":orders})

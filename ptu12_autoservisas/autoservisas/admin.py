@@ -2,9 +2,13 @@ from django.contrib import admin
 from . import models
 from .models import OrderEntry
 
+class CarModelAdmin(admin.ModelAdmin):
+    list_display = ("brand", "model", "year")
+
 
 class OrderEntryInline(admin.TabularInline):
     model = OrderEntry
+    extra = 0
 
 class OrderEntryAdmin(admin.ModelAdmin):
     list_display = ("service", "order", "quantity", "price")
@@ -13,12 +17,15 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = ("id", "car", "date")
     inlines = [OrderEntryInline]
 
+class CarModelAdmin(admin.ModelAdmin):
+    list_display = ("id", "make", "model", "year")
+
 class CarAdmin(admin.ModelAdmin):
     list_display = (
         "id", "model", "license_plate", 
-        "vin_code", "client")
-    list_filter = ("client", "model")
-    search_fields = ("license_plate", "vin_code")
+        "vin_code", "user_field")
+    list_filter = ("model",)
+    search_fields = ("license_plate", "vin_code", "due_back")
 
 class ServiceAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "price")

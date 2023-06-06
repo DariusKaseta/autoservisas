@@ -86,3 +86,23 @@ img.car_cover {
     margin: 0 0.5rem;
     border: 2px solid #000;
 }
+
+.box-info {
+    background-color: #99ccff;
+}
+.box-warning {
+    background-color: #ffcc99;
+}
+.box-error {
+    background-color: #ff9999;
+}
+.box-success {
+    background-color: #c0ffb0;
+}
+.box-debug {
+    background-color: #eeeeee;
+}
+form p label {
+    display: inline-block;
+    min-width: 12vw;
+}
