@@ -1,12 +1,44 @@
+ul.nav {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: conter;
+    padding: 0;
+}
+
+ul.nav li {
+    list-style: none;
+    margin: 0;
+}
+
+.nav-button {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background-color: rgb(0, 255, 132);
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.nav-button:hover {
+    background-color: rgb(195, 250, 217);
+}
+
+.nav-button:active {
+    background-color: rgba(173, 216, 230, 0.5);
+}
+
+
 body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    padding: 0;
+    margin: 0;
 }
 
-.footer {
+footer {
     text-align: center;
-    background-color: lightslategray;
+    background-color: rgb(176, 255, 207);
     padding: 0.1rem;
     margin-top: auto;
     position: fixed;
@@ -15,13 +47,24 @@ body {
     width: 100%;
 }
 
-.header {
-    background-color: rgb(105, 134, 135);
+header {
+    background-color: rgb(131, 192, 208); 
 }
+
 
 ul.paginator {
     list-style: none;
     padding-inline-start: 0.5rem;
+}
+
+header ul.nav li {
+    margin: 0 0.15rem;
+    font-size: 1.25em;
+}
+
+header ul.nav .logo {
+    font-weight: bold;
+    /* flex-grow: 1; */
 }
 
 .paginator {
@@ -42,5 +85,4 @@ img.car_cover {
     max-width: 20%;
     margin: 0 0.5rem;
     border: 2px solid #000;
-
 }
