@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from datetime import date
 from django.contrib.auth import get_user_model
+from tinymce.models import HTMLField
 
 User = get_user_model()
 
@@ -37,7 +38,7 @@ class Car(models.Model):
         on_delete=models.CASCADE,
         related_name="cars")
     vin_code =  models.CharField(_("VIN code"), max_length=50, db_index=True)
-    # note = models.CharField(_("Note"), max_length=1000, null=True, blank=True)
+    description = HTMLField(_("Description"), max_length=10000, null=True, blank=True)
 
     cover = models.ImageField(
         _("cover"), upload_to="autoservisas/car_covers",

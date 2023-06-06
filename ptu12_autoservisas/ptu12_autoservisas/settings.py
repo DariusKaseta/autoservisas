@@ -36,6 +36,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     "autoservisas",
     "user_profile",
+    "tinymce",
     'django.contrib.humanize',
     'django.contrib.admin',
     'django.contrib.auth',

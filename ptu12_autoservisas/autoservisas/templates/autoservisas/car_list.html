@@ -8,7 +8,7 @@
 {% endwith %}
 <ul>
     {% for car in car_list %}
-        <li><a href="{% url 'car_detail' car.pk %}"> {{ car.model.brand }}</a></li>
+        <li><a href="{% url 'car_detail' car.pk %}"> {{ car.model.brand }}  -  {{ car.model.model}} </a></li>
     {% endfor %}
 </ul>
 {% with car_list as page_obj %}
