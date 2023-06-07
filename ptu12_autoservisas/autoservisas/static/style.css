@@ -40,11 +40,11 @@ footer {
     text-align: center;
     background-color: rgb(176, 255, 207);
     padding: 0.1rem;
-    margin-top: auto;
     position: fixed;
     left: 0;
     bottom: 0;
     width: 100%;
+    z-index: 100;
 }
 
 header {
@@ -105,4 +105,22 @@ img.car_cover {
 form p label {
     display: inline-block;
     min-width: 12vw;
+}
+
+.orderoverdue {
+    background-color: #aa0000;
+    color: #ffffff;
+    font-weight: bolder;
+    padding: 0 0.5rem;
+}
+
+img.user-profile-picture {
+    max-width: 20vw;
+    padding: 0 0.5rem;
+    border-radius: 1rem;
+    float: left;
+}
+
+label[for="id_content"]{
+    display: none;
 }

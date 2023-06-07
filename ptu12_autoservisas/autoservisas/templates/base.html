@@ -26,8 +26,7 @@
         <li class="logo"><a class="nav-button" href="{% url 'order_list_view' %}">Order List</a></li>
         <li class="logo"><a class="nav-button" href="{% url 'my_orders' %}">My orders</a></li>
         {% if user.is_authenticated %}
-            <li class="user">
-                &#128100; {{ user.username }}
+        <li class="logo"><a class="nav-button" href="{% url 'profile' %}">&#128100;{{ user.username }}</a></li>
             </li>
             <li><a class="nav-button" href="{% url 'logout' %}">Logout</a></li>
         {% else %}

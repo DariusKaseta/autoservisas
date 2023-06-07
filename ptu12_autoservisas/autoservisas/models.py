@@ -26,9 +26,9 @@ class CarModel(models.Model):
 
 
 class Car(models.Model):
-    user_field= models.ForeignKey(
+    client = models.ForeignKey(
         User, 
-        verbose_name=_("user_field"), 
+        verbose_name=_("client"), 
         related_name="cars", 
         on_delete=models.CASCADE, null=True, blank=True)
     license_plate = models.CharField(_("License plate Nr."), max_length=50, db_index=True)
@@ -59,7 +59,7 @@ class Car(models.Model):
     
 class Order(models.Model):
     date = models.DateField(_("Date"), auto_now=False, auto_now_add=True, db_index=True)
-    price = models.DecimalField(_("Price"), max_digits=18, decimal_places=2, default=0)
+    price = models.DecimalField(_("Price"), max_digits=18, decimal_places=2, default=0, null=True)
     car = models.ForeignKey(
         Car, 
         verbose_name=_("car"), 
@@ -80,14 +80,14 @@ class Order(models.Model):
         verbose_name_plural = _("orders")
 
     def __str__(self):
-        return f"Order #{self.id} - {self.date}"
+        return f"No. - {self.car} - { self.car.model.model}"
 
     def get_absolute_url(self):
         return reverse("order_detail", kwargs={"pk": self.pk})
     
     @property
     def client(self):
-        return self.car.user_field
+        return self.car.client
 
 class Service(models.Model):
     name = models.CharField(_("Service Name"), max_length=150, db_index=True)
@@ -152,11 +152,42 @@ class OrderEntry(models.Model):
     def get_status_display(self):
         return dict(self.STATUS_CHOICES).get(self.status)
 
-    
     def save(self, *args, **kwargs):
         if self.price == 0:
             self.price = self.service.price
-        self.total = self.price * self.quantity
+        if self.status != "cancelled":  # Skip calculating total if service is cancelled
+            self.total = self.price * self.quantity
         super().save(*args, **kwargs)
-        self.order.price = self.order.order_entries.aggregate(models.Sum("total"))["total__sum"]
+        self.order.price = self.order.order_entries.exclude(status="cancelled").aggregate(models.Sum("total"))["total__sum"]
         self.order.save()
+
+class UserOrderReview(models.Model):
+    order = models.ForeignKey(
+        Order,
+        verbose_name=_("order"),
+        on_delete=models.CASCADE,
+        related_name="reviews",
+    )
+
+    reviewer = models.ForeignKey(
+        User,
+        verbose_name=_("reviewer"),
+        on_delete=models.SET_NULL,
+        related_name="user_order_review",
+        null=True, blank=True,
+    )   
+    reviewed_at = models.DateTimeField(_("Reviewed"), auto_now_add=True)
+    content = models.TextField(_("content"), max_length=4000)
+
+    class Meta:
+        ordering = ["-reviewed_at"]
+        verbose_name = _("user order review")
+        verbose_name_plural = _("user order reviews")
+
+    def __str__(self):
+        return f"{self.reviewed_at}: {self.reviewer}"
+
+    def get_absolute_url(self):
+        return reverse("userorderreview_detail", kwargs={"pk": self.pk})
+
+
