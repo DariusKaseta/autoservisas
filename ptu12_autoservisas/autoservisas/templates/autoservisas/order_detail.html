@@ -17,13 +17,40 @@
             <strong>Service:</strong> {{ entry.service }}
             <br>
             <strong>Quantity:</strong> {{ entry.quantity }}
-            <br>
-            <strong>Price:</strong> {{ entry.price }}
+            </li>
+            <strong>Total:</strong> {{ entry.total }}
+            </li>
+            <li><strong>Status:</strong> 
+          {% with entry_color=entry.get_color %}
+            <span style="color: {{ entry_color }}">{{ entry.get_status_display }}<br><br></span>
+          {% endwith %}
+        {% endfor %}
+        <strong>Total service fee - {{ order.price }}&#8364;</strong>
+    </ul>
+{% endif %}
+<h2>Commentary section</h2>
+{% if user.is_authenticated %}
+{% if user.is_superuser or user.is_staff or user == order.car.client %} 
+    <form method="post" action="{{ request.path }}">
+    <h3>Leave your comments:</h3>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Post</button>
+    </form>
+{% else %}
+    <p class="box box-info">Only the car owner or registered users can discuss. <a href="{% url 'login' %}">Login</a> or <a href="{% url 'signup' %}">sign up</a></p>
+{% endif %}
+{% endif %} 
+{% if order.reviews.count > 0 %}
+    <ul>
+        {% for review in order.reviews.all  %}
+            <li>{{ review.reviewed_at }} by {{ review.reviewer }}<br>
+                {{ review.content }}
             </li>
         {% endfor %}
     </ul>
 {% endif %}
-{% endblock %}
+{% endblock content %}
 
 
 
