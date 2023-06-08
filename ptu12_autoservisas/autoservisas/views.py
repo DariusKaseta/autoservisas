@@ -44,7 +44,7 @@ def car_list(request):
         )
     else:
         qs = qs.all()
-    paginator = Paginator(qs, 3)
+    paginator = Paginator(qs, 5)
     car_list = paginator.get_page(request.GET.get("page"))
     return render(request, "autoservisas/car_list.html", {
         "car_list" : car_list,

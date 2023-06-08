@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
-
+from PIL import Image
 
 
 class Profile(models.Model):
@@ -24,5 +24,15 @@ class Profile(models.Model):
 
     def get_absolute_url(self):
         return reverse("profile_detail", kwargs={"pk": self.pk})
+    
+
+    def save(self, *args, **kwargs) -> None:
+        super().save(*args, **kwargs)
+        if self.picture:
+            pic = Image.open(self.picture.path)
+            if pic.width > 300 or pic.height > 300:
+                new_size = (300, 300)
+                pic.thumbnail(new_size)
+                pic.save(self.picture.path)
 
 # Create your models here.

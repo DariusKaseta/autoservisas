@@ -2,6 +2,11 @@
  {% load static %}
 {% block title %} Car details {{ block.super }}{% endblock title %}
 {% block content %}
+<script>
+    function goBack() {
+        window.history.back();
+    }
+</script>
 
 <h1>Car details</h1>
 {% if car.cover %}
@@ -9,7 +14,7 @@
 {% else %}
     <img class="car_covers" src="{% static "autoservisas/img/no_car_img.jpg" %}"> 
 {% endif %}
-<a class="button" href="{% url 'car_list' %}">&#10554;</a>
+<a class="button" onclick="goBack()">&#10554;</a>
 <p>Make & Model: {{ car.model.brand}} -  {{ car.model.model }}</p>
 <p>Year: {{ car.model.year }}</p>
 <p>License Plate: {{ car.license_plate }}</p>

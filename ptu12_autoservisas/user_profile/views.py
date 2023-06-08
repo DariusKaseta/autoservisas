@@ -4,6 +4,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_protect
 import re
 from django.contrib.auth.decorators import login_required
+from . forms import ProfileUpdateForm, UserUpdateForm
+
 
 User = get_user_model()
 
@@ -15,6 +17,24 @@ def profile(request, user_id=None):
     else:
         user = get_object_or_404(get_user_model(), id=user_id)
     return render(request, 'user_profile/profile.html', {'user_': user})
+
+
+@login_required
+@csrf_protect
+def profile_update(request):
+    if request.method == "POST":
+        u_form = UserUpdateForm(request.POST, instance=request.user)
+        p_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+        if u_form.is_valid() and p_form.is_valid():
+            u_form.save()
+            p_form.save()
+            messages.success(request, "Profile updated.")
+            return redirect("profile")
+    else:
+        u_form = UserUpdateForm(instance=request.user)
+        p_form = ProfileUpdateForm(instance=request.user.profile)
+
+    return render(request, "user_profile/profile_update.html", {"u_form" : u_form, "p_form" : p_form})
 
 
 @csrf_protect
